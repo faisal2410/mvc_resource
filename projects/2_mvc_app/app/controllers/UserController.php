@@ -32,16 +32,35 @@ class UserController
     }
 
 
-    public function update($id)
+    public function update()
     {
-        // Implement the update logic
+        $id = $_GET['id'] ?? null;
+        if (!$id) {
+            echo "Invalid user ID.";
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Handle form submission
+            $name = $_POST['name'];
+            $email = $_POST['email'];
+            $this->userModel->update($id, $name, $email);
+            header("Location: /?controller=user&action=index");
+        } else {
+            // Display the form with existing user data
+            $user = $this->userModel->getById($id);
+            require '../app/Views/user_update.php';
+        }
     }
 
-
-    public function delete($id)
+    public function delete()
     {
-        // Implement the delete logic
+        $id = $_GET['id'] ?? null;
+        if ($id && $this->userModel->delete($id)) {
+            header("Location: /?controller=user&action=index");
+        } else {
+            echo "Unable to delete user.";
+        }
     }
-
 
 }
