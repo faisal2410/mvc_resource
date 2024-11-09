@@ -1,4 +1,10 @@
 <?php
+
+/*
+✅Chatgpt prompt for details :
+I want to record a screencast video explaining the following topics. Please prepare a detailed script with code examples for explaining these topics <topic>Implementing a Basic MVC Pattern in PHP</topic> <subtopic1>Setting up a simple MVC structure in PHP without a framework</subtopic1><subtopic2>Building basic CRUD functionality with MVC principles. </subtopic2><note1>My context is: I have learned PHP object-oriented programming, SOLID Principles, Common design patterns, PDO (PHP Data Object) with MySQL, Error and exception handling, and the Standard PHP Library(SPL) </note1><note2>Please add a nice title</note2><note3>Please add topics as agenda with numbered list</note3>
+
+*/ 
 /*
 Here's a structured list to help you learn MVC (Model-View-Controller) architecture thoroughly before diving into Laravel:
 
