@@ -18,7 +18,7 @@ class UserController
     public function index()
     {
         $users = $this->userModel->getAll();
-        require '../app/Views/user_index.php';
+        require '../app/views/user_index.php';
     }
 
     public function create()
@@ -28,7 +28,7 @@ class UserController
             $this->userModel->create($_POST['name'], $_POST['email']);
             header("Location: /?controller=user&action=index");
         }
-        require '../app/Views/user_create.php';
+        require '../app/views/user_create.php';
     }
 
 
@@ -49,7 +49,7 @@ class UserController
         } else {
             // Display the form with existing user data
             $user = $this->userModel->getById($id);
-            require '../app/Views/user_update.php';
+            require '../app/views/user_update.php';
         }
     }
 
