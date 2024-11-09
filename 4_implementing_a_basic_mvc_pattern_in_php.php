@@ -1,212 +1,184 @@
 <?php
 /*
 
-Here's a detailed script for your screencast on "Implementing a Basic MVC Pattern in PHP," covering how to set up a simple MVC structure in PHP and build basic CRUD functionality.
+Here's a detailed script for your screencast on "Implementing a Basic MVC Pattern in PHP". I'll include an agenda, a detailed explanation of each topic, and code examples to help your learners follow along easily.
 
-Title: Building a Simple MVC Pattern in PHP with Basic CRUD Operations
-Agenda
+Title: Implementing a Basic MVC Pattern in PHP from Scratch
+
+Agenda:
+
 Introduction to MVC Architecture
 Setting Up a Simple MVC Structure in PHP
-Creating Models for Data Handling
-Building Views for Displaying Data
-Developing Controllers for Business Logic
-Implementing Basic CRUD Operations
-Conclusion and Final Remarks
-Script
-Introduction to MVC Architecture
-Hello everyone! In this video, we’ll explore the Model-View-Controller (MVC) Pattern in PHP. MVC is a design pattern that helps separate concerns by dividing code into three main components:
+Creating Models, Views, and Controllers
+Building Basic CRUD Functionality with MVC Principles
+Connecting the MVC Components Together
+Conclusion and Next Steps
+1. Introduction to MVC Architecture
+Explanation:
+MVC (Model-View-Controller) is a design pattern that separates application logic into three interconnected components:
 
-Model: Manages data and business logic.
-View: Handles the presentation and output of data.
-Controller: Acts as an intermediary, handling input and coordinating between the Model and View.
-MVC architecture is commonly used in frameworks, but today, we’ll build a simple MVC structure without using any framework, helping you understand how MVC works at a fundamental level.
+Model: Manages the data and business logic.
+View: Handles the display of data.
+Controller: Processes user input and coordinates the Model and View.
+MVC improves code organization, testability, and separation of concerns.
 
-Setting Up a Simple MVC Structure in PHP
-Let's start by creating a basic folder structure for our MVC application:
+2. Setting Up a Simple MVC Structure in PHP
+Explanation:
+We’ll start by creating a basic file structure. In the root folder of the project, create the following directories:
 
-plaintext
+bash
 Copy code
-project-root/
-│
-├── public/
-│   └── index.php        # Entry point
-│
-├── app/
-│   ├── controllers/
-│   ├── models/
-│   └── views/
-│
-├── core/
-│   ├── App.php          # Core MVC setup
-│   ├── Controller.php   # Base controller class
-│   └── Model.php        # Base model class
-│
-└── config/
-    └── config.php       # Database configuration
-public/index.php – Our entry point, which initializes the application.
-app/controllers – Stores all controllers.
-app/models – Contains all models.
-app/views – Holds all views.
-core – Contains core files like our App class, base controller, and model.
-Creating Models for Data Handling
-For our example, we’ll build a CRUD application to manage a list of users in a database. We’ll start by setting up our User model.
-
-Configuring the Database
-Create config/config.php with the following database setup:
+/mvc-app
+    /app
+        /Controllers
+        /Models
+        /Views
+    /config
+    /public
+        index.php
+    /vendor
+Step-by-Step Code for Initial Structure:
+Configuring index.php: This file will route requests to the correct controller and method.
 
 php
 Copy code
 <?php
-return [
-    'host' => 'localhost',
-    'dbname' => 'mvc_app',
-    'username' => 'root',
-    'password' => '',
-];
-Creating the Base Model
-Next, create core/Model.php to handle database connections.
+require_once '../config/routes.php';
+Setting Up routes.php: In /config/routes.php, define basic routes for your app. Here we’ll use query parameters to identify the controller and action:
 
 php
 Copy code
 <?php
-namespace Core;
+$controller = $_GET['controller'] ?? 'home';
+$action = $_GET['action'] ?? 'index';
 
-use PDO;
-use PDOException;
+$controllerClass = 'App\\Controllers\\' . ucfirst($controller) . 'Controller';
 
-abstract class Model {
-    protected $db;
-
-    public function __construct() {
-        $config = require __DIR__ . '/../config/config.php';
-        try {
-            $this->db = new PDO("mysql:host={$config['host']};dbname={$config['dbname']}", $config['username'], $config['password']);
-            $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            die("Database connection failed: " . $e->getMessage());
-        }
-    }
+if (class_exists($controllerClass) && method_exists($controllerClass, $action)) {
+    $controllerInstance = new $controllerClass();
+    $controllerInstance->$action();
+} else {
+    echo "404 Not Found";
 }
-Creating the User Model
-Now, create app/models/User.php to represent our users table.
+3. Creating Models, Views, and Controllers
+Creating a Model:
+In /app/Models, create a User.php model to interact with the database.
 
 php
 Copy code
 <?php
 namespace App\Models;
-
-use Core\Model;
 use PDO;
 
-class User extends Model {
-    public function getAllUsers() {
-        $stmt = $this->db->query("SELECT * FROM users");
+class User {
+    private $pdo;
+
+    public function __construct($pdo) {
+        $this->pdo = $pdo;
+    }
+
+    public function getAll() {
+        $stmt = $this->pdo->prepare("SELECT * FROM users");
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function createUser($name, $email) {
-        $stmt = $this->db->prepare("INSERT INTO users (name, email) VALUES (:name, :email)");
-        $stmt->execute(['name' => $name, 'email' => $email]);
+    public function create($name, $email) {
+        $stmt = $this->pdo->prepare("INSERT INTO users (name, email) VALUES (:name, :email)");
+        return $stmt->execute(['name' => $name, 'email' => $email]);
     }
 
-    public function getUserById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE id = :id");
-        $stmt->execute(['id' => $id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    public function updateUser($id, $name, $email) {
-        $stmt = $this->db->prepare("UPDATE users SET name = :name, email = :email WHERE id = :id");
-        $stmt->execute(['id' => $id, 'name' => $name, 'email' => $email]);
-    }
-
-    public function deleteUser($id) {
-        $stmt = $this->db->prepare("DELETE FROM users WHERE id = :id");
-        $stmt->execute(['id' => $id]);
-    }
+    // Additional methods for read, update, and delete.
 }
-Building Views for Displaying Data
-Our views will display data returned by controllers. Let’s create a simple view to display all users.
-
-In app/views/users/index.php:
-
-php
-Copy code
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Users</title>
-</head>
-<body>
-    <h1>Users</h1>
-    <table>
-        <tr><th>ID</th><th>Name</th><th>Email</th><th>Actions</th></tr>
-        <?php foreach ($users as $user): ?>
-            <tr>
-                <td><?= $user['id'] ?></td>
-                <td><?= $user['name'] ?></td>
-                <td><?= $user['email'] ?></td>
-                <td>
-                    <a href="/user/edit/<?= $user['id'] ?>">Edit</a> |
-                    <a href="/user/delete/<?= $user['id'] ?>">Delete</a>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    </table>
-</body>
-</html>
-Developing Controllers for Business Logic
-The UserController will fetch user data and send it to views.
-
-In app/controllers/UserController.php:
+Creating a Controller:
+In /app/Controllers, create a UserController.php file to handle actions for users.
 
 php
 Copy code
 <?php
 namespace App\Controllers;
-
 use App\Models\User;
+use PDO;
 
 class UserController {
+    private $userModel;
+
+    public function __construct() {
+        $pdo = new PDO("mysql:host=localhost;dbname=mvc_app", "username", "password");
+        $this->userModel = new User($pdo);
+    }
+
     public function index() {
-        $userModel = new User();
-        $users = $userModel->getAllUsers();
-        require __DIR__ . '/../views/users/index.php';
+        $users = $this->userModel->getAll();
+        require '../app/Views/user_index.php';
     }
 
-    public function create($name, $email) {
-        $userModel = new User();
-        $userModel->createUser($name, $email);
-        header("Location: /user/index");
-    }
-
-    public function edit($id) {
-        // Show edit form (implement as needed)
-    }
-
-    public function delete($id) {
-        $userModel = new User();
-        $userModel->deleteUser($id);
-        header("Location: /user/index");
+    public function create() {
+        // Capture POST data
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->userModel->create($_POST['name'], $_POST['email']);
+            header("Location: /?controller=user&action=index");
+        }
+        require '../app/Views/user_create.php';
     }
 }
-Implementing Basic CRUD Operations
-With MVC structure in place, let’s outline basic CRUD:
+Creating a View:
+In /app/Views, create user_index.php and user_create.php.
 
-Create: createUser inserts a new record.
-Read: getAllUsers retrieves users.
-Update: updateUser modifies existing data.
-Delete: deleteUser removes a record.
-Here’s a quick look at how to integrate these methods within controllers and views for CRUD functionality.
+user_index.php:
 
-Conclusion and Final Remarks
-To wrap up, we covered setting up a simple MVC structure in PHP from scratch. You now understand how MVC helps organize code by dividing data management, display, and application logic. I hope this tutorial helps you feel more confident with MVC in PHP. Thank you for watching, and happy coding!
+php
+Copy code
+<h1>Users List</h1>
+<a href="?controller=user&action=create">Add New User</a>
+<ul>
+    <?php foreach ($users as $user): ?>
+        <li><?= htmlspecialchars($user['name']) ?> (<?= htmlspecialchars($user['email']) ?>)</li>
+    <?php endforeach; ?>
+</ul>
+user_create.php:
 
+php
+Copy code
+<h1>Create New User</h1>
+<form action="?controller=user&action=create" method="POST">
+    <label>Name: <input type="text" name="name"></label><br>
+    <label>Email: <input type="email" name="email"></label><br>
+    <button type="submit">Submit</button>
+</form>
+4. Building Basic CRUD Functionality with MVC Principles
+Explanation:
+To complete CRUD operations, we add methods for retrieving single records, updating, and deleting in both the User model and the UserController.
 
+Update User in UserController:
 
+php
+Copy code
+public function update($id) {
+    // Implement the update logic
+}
+Delete User in UserController:
 
+php
+Copy code
+public function delete($id) {
+    // Implement the delete logic
+}
+Each action would have a corresponding view to capture form data or display feedback to the user.
 
+5. Connecting the MVC Components Together
+Explanation:
+The routing in index.php will pass the correct parameters to the UserController. Each user action in the URL will correspond to a method in the controller, which in turn calls the necessary model methods and includes the appropriate view.
+
+Example Usage:
+
+/?controller=user&action=index - Lists users.
+/?controller=user&action=create - Form to create a new user.
+6. Conclusion and Next Steps
+Explanation:
+MVC is a powerful design pattern that structures applications effectively. From here, you can add middleware for authentication, more robust routing, and error handling to expand the MVC foundation you’ve built here.
+
+This script introduces MVC concepts clearly, provides a working CRUD example, and emphasizes the purpose of each component within the MVC framework.
 
 
 

@@ -1,0 +1,16 @@
+{
+    "name": "abdur/mvc_app",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "RaihanaFerdousi",
+            "email": "raihanaferdousi110@gmail.com"
+        }
+    ],
+    "require": {}
+}
