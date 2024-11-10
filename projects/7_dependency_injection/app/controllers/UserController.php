@@ -3,9 +3,9 @@
 
 class UserController
 {
-    private $userService;
+    private UserService $userService;
 
-    public function __construct($userService)
+    public function __construct(UserService $userService)
     {
         $this->userService = $userService;
     }
@@ -13,7 +13,7 @@ class UserController
     public function listUsers()
     {
         $users = $this->userService->getAllUsers();
-        print_r($users);
+        // print_r($users);
         // foreach ($users as $user) {
         //     echo $user['name'] . "<br>";
         // }

@@ -3,10 +3,10 @@
 
 class User
 {
-    private $db;
-    private $logger;
+    private Database $db;
+    private Logger $logger;
 
-    public function __construct($db, $logger)
+    public function __construct(Database $db, Logger $logger)
     {
         $this->db = $db;
         $this->logger = $logger;

@@ -3,9 +3,9 @@
 
 class UserService
 {
-    private $userModel;
+    private User $userModel;
 
-    public function __construct($userModel)
+    public function __construct(User $userModel)
     {
         $this->userModel = $userModel;
     }
