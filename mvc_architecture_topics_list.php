@@ -167,17 +167,20 @@ Implementing event sourcing patterns in an MVC architecture
 Storing events as a series of immutable records and rebuilding application state
 Managing the complexity of event-driven models within MVC applications
 
-29.GraphQL Integration in MVC
 
-Implementing GraphQL as an alternative to REST in MVC applications
-Setting up GraphQL queries and mutations in the model layer
-Managing authorization and data fetching for GraphQL endpoints in MVC
 
-30.Applying SOLID Principles and Design Patterns in Complex MVC Applications
+29.Applying SOLID Principles and Design Patterns in Complex MVC Applications
 
 Adapting SOLID principles within a large-scale MVC application
 Using design patterns like Factory, Strategy, Observer, and Singleton to solve common problems in MVC
 Refactoring existing MVC code to be more modular, extensible, and maintainable
+
+
+30.GraphQL Integration in MVC
+
+Implementing GraphQL as an alternative to REST in MVC applications
+Setting up GraphQL queries and mutations in the model layer
+Managing authorization and data fetching for GraphQL endpoints in MVC
 
 
 
